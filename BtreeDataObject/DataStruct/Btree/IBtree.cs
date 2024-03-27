@@ -5,9 +5,9 @@ namespace BtreeDataObject.DataTypes
 {
     public interface IBtree
     {
-        void Insert(Point pin);
+        void Insert(Point point);
 
-        bool Search(Point pin);
+        bool Search(Point point);
 
         Point SearchByChannelId(int ChannelId);
 

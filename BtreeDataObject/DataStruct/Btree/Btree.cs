@@ -11,45 +11,45 @@ namespace BtreeDataObject.DataTypes
             root = new BTreeNode();
         }
 
-        public void Insert(Point pin)
+        public void Insert(Point point)
         {
-            Insert(root, pin);
+            Insert(root, point);
         }
 
-        private void Insert(BTreeNode node, Point pin)
+        private void Insert(BTreeNode node, Point point)
         {
             if (node.IsLeafNode())
             {
-                InsertIntoLeafNode(node, pin);
+                InsertIntoLeafNode(node, point);
             }
             else
             {
-                InsertIntoInternalNode(node, pin);
+                InsertIntoInternalNode(node, point);
             }
         }
 
-        private void InsertIntoLeafNode(BTreeNode node, Point pin)
+        private void InsertIntoLeafNode(BTreeNode node, Point point)
         {
             if (node.Points.Count < nodeSize)
             {
-                AddPointToNode(node, pin);
+                AddPointToNode(node, point);
             }
             else
             {
                 SplitLeafNode(node);
-                Insert(root, pin);
+                Insert(root, point);
             }
         }
 
-        private void InsertIntoInternalNode(BTreeNode node, Point pin)
+        private void InsertIntoInternalNode(BTreeNode node, Point point)
         {
-            int childIndex = DetermineChildIndex(node, pin);
-            Insert(node.Children[childIndex], pin);
+            int childIndex = DetermineChildIndex(node, point);
+            Insert(node.Children[childIndex], point);
         }
 
-        private void AddPointToNode(BTreeNode node, Point pin)
+        private void AddPointToNode(BTreeNode node, Point point)
         {
-            node.Points.Add(pin);
+            node.Points.Add(point);
         }
 
         private void SplitLeafNode(BTreeNode node)
@@ -101,13 +101,13 @@ namespace BtreeDataObject.DataTypes
             }
         }
 
-        private BTreeNode FindParent(BTreeNode currentNode, BTreeNode childNode, Point pin)
+        private BTreeNode FindParent(BTreeNode currentNode, BTreeNode childNode, Point point)
         {
             if (currentNode.Children.Contains(childNode)) return currentNode;
             foreach (var node in currentNode.Children)
             {
-                if (pin.ChannelId.CompareTo(node.Points[0].ChannelId) < 0)
-                    return FindParent(node, childNode, pin);
+                if (point.ChannelId.CompareTo(node.Points[0].ChannelId) < 0)
+                    return FindParent(node, childNode, point);
             }
             return null;
         }
@@ -125,19 +125,19 @@ namespace BtreeDataObject.DataTypes
             UpdateParentNode(node, left, right, middlePoint);
         }
 
-        private int DetermineChildIndex(BTreeNode node, Point pin)
+        private int DetermineChildIndex(BTreeNode node, Point point)
         {
             int i = 0;
-            while (i < node.Points.Count && pin.ChannelId.CompareTo(node.Points[i].ChannelId) > 0)
+            while (i < node.Points.Count && point.ChannelId.CompareTo(node.Points[i].ChannelId) > 0)
             {
                 i++;
             }
             return i;
         }
 
-        public bool Search(Point pin)
+        public bool Search(Point point)
         {
-            return Search(root, pin);
+            return Search(root, point);
         }
         public Point SearchByChannelId(int ChannelId)
         {
@@ -146,12 +146,12 @@ namespace BtreeDataObject.DataTypes
         #region search by ChannelId
         private Point SearchByChannelId(BTreeNode node, int ChannelId)
         {
-            foreach (var pin in node.Points)
+            foreach (var point in node.Points)
             {
-                if (pin.ChannelId == ChannelId)
+                if (point.ChannelId == ChannelId)
                 {
                     Console.WriteLine($"Point with ChannelId '{ChannelId}' found.");
-                    return pin;
+                    return point;
                 }
             }
 
@@ -206,12 +206,12 @@ namespace BtreeDataObject.DataTypes
             }
 
             // Check each Point in the current node
-            foreach (var pin in node.Points)
+            foreach (var point in node.Points)
             {
-                if (pin.PointByIndex == targetPointByIndex)
+                if (point.PointByIndex == targetPointByIndex)
                 {
-                    Console.WriteLine($"Point with PointByIndex '{targetPointByIndex}' found. with ChannelId {pin.ChannelId}");
-                    return pin;
+                    Console.WriteLine($"Point with PointByIndex '{targetPointByIndex}' found. with ChannelId {point.ChannelId}");
+                    return point;
                 }
             }
 
@@ -243,22 +243,22 @@ namespace BtreeDataObject.DataTypes
 
         #endregion
 
-        private bool Search(BTreeNode node, Point pin)
+        private bool Search(BTreeNode node, Point point)
         {
-            int index = FindIndex(node.Points, pin);
+            int index = FindIndex(node.Points, point);
             if (index >= 0)
             {
-                Console.WriteLine($"Point with ChannelId '{pin.ChannelId}' found.");
+                Console.WriteLine($"Point with ChannelId '{point.ChannelId}' found.");
                 return true;
             }
             else if (!node.IsLeafNode())
             {
-                int childIndex = FindChildIndex(node.Points, pin);
-                return Search(node.Children[childIndex], pin);
+                int childIndex = FindChildIndex(node.Points, point);
+                return Search(node.Children[childIndex], point);
             }
             else
             {
-                Console.WriteLine($"Point with ChannelId '{pin.ChannelId}' not found.");
+                Console.WriteLine($"Point with ChannelId '{point.ChannelId}' not found.");
                 return false;
             }
         }
@@ -277,11 +277,11 @@ namespace BtreeDataObject.DataTypes
             return -1; // Point not found
         }
 
-        private int FindChildIndex(List<Point> list, Point pin)
+        private int FindChildIndex(List<Point> list, Point point)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (pin.ChannelId.CompareTo(list[i].ChannelId) < 0)
+                if (point.ChannelId.CompareTo(list[i].ChannelId) < 0)
                 {
                     return i;
                 }
@@ -293,20 +293,20 @@ namespace BtreeDataObject.DataTypes
         #region Traverse
         public List<Point> Traverse()
         {
-            List<Point> pinList = new List<Point>();
+            List<Point> pointList = new List<Point>();
             if (root == null)
             {
                 Console.WriteLine("B-tree is empty.");
-                return pinList;
+                return pointList;
             }
 
             int maxPointByIndex = int.MinValue;
 
-            Traverse(root, ref maxPointByIndex, ref pinList);
-            return pinList;
+            Traverse(root, ref maxPointByIndex, ref pointList);
+            return pointList;
         }
 
-        private void Traverse(BTreeNode node, ref int maxPointByIndex, ref List<Point> pinList)
+        private void Traverse(BTreeNode node, ref int maxPointByIndex, ref List<Point> pointList)
         {
             if (node == null)
             {
@@ -315,23 +315,23 @@ namespace BtreeDataObject.DataTypes
 
             if (!node.IsLeafNode())
             {
-                Traverse(node.Children.Last(), ref maxPointByIndex, ref pinList);
+                Traverse(node.Children.Last(), ref maxPointByIndex, ref pointList);
             }
 
-            foreach (var pin in node.Points)
+            foreach (var point in node.Points)
             {
-                if (pin.PointByIndex > maxPointByIndex)
+                if (point.PointByIndex > maxPointByIndex)
                 {
-                    maxPointByIndex = pin.PointByIndex;
+                    maxPointByIndex = point.PointByIndex;
                 }
-                pinList.Add(pin);
+                pointList.Add(point);
             }
 
             if (!node.IsLeafNode())
             {
                 for (int i = node.Children.Count - 2; i >= 0; i--)
                 {
-                    Traverse(node.Children[i], ref maxPointByIndex, ref pinList);
+                    Traverse(node.Children[i], ref maxPointByIndex, ref pointList);
                 }
             }
         }
