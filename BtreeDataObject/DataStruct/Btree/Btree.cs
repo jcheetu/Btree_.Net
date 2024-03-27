@@ -5,7 +5,7 @@ namespace BtreeDataObject.DataTypes
     public class Btree: IBtree
     {
         public BTreeNode root;
-        public const int nodeSize = 100000;
+        public const int nodeSize = 100;
         public Btree()
         {
             root = new BTreeNode();
